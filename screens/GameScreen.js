@@ -4,7 +4,7 @@ import Title from "../components/UI/Title";
 import NumberContainer from "../components/game/NumberContainer";
 import PrimaryButton from "../components/UI/PrimaryButton";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function generateRandomBetween(min, max, exclude) {
     const rndNum = Math.floor(Math.random() * (max - min)) + min;
@@ -19,9 +19,15 @@ function generateRandomBetween(min, max, exclude) {
 let minBoundary = 1;
 let maxBoundary = 100;
 
-export default function GameScreen({userNumber}) {
-    const initialGuess = generateRandomBetween(minBoundary, maxBoundary, userNumber);
+export default function GameScreen({userNumber, onGameOver}) {
+    const initialGuess = generateRandomBetween(1, 100, userNumber);
     const [currentGuess, setCurrentGuess] = useState(initialGuess);
+
+    useEffect(() => {
+        if (currentGuess === userNumber){
+            onGameOver();
+        }
+    }, [currentGuess, userNumber, onGameOver])
 
     function nextGuessHandler(direction) {
         if((direction === 'lower' && currentGuess < userNumber) || (direction === 'greater' && currentGuess > userNumber)){
@@ -36,6 +42,7 @@ export default function GameScreen({userNumber}) {
         } else {
             minBoundary = currentGuess + 1;
         }
+
         const newRndNumber = generateRandomBetween(minBoundary, maxBoundary, currentGuess);
         setCurrentGuess(newRndNumber);
     }
